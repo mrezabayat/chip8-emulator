@@ -12,21 +12,32 @@
 #define CHIP8_WINDOW_SCALER 10
 #define EMULATOR_WINDOW_TITLE "Chip8 Emulator"
 
-static const SDL_Keycode CHIP8_KEY_MAP[CHIP8_TOTAL_KEYS] = {SDLK_0,
-                                                            SDLK_1,
-                                                            SDLK_2,
-                                                            SDLK_3,
-                                                            SDLK_4,
-                                                            SDLK_5,
-                                                            SDLK_6,
-                                                            SDLK_7,
-                                                            SDLK_8,
-                                                            SDLK_9,
-                                                            SDLK_a,
-                                                            SDLK_b,
-                                                            SDLK_c,
-                                                            SDLK_d,
-                                                            SDLK_e,
-                                                            SDLK_f};
+/* clang-format off */
+static const SDL_Keycode CHIP8_KEY_MAP[CHIP8_TOTAL_KEYS] = {
+    SDLK_0, SDLK_1, SDLK_2, SDLK_3,
+    SDLK_4, SDLK_5, SDLK_6, SDLK_7,
+    SDLK_8, SDLK_9, SDLK_a, SDLK_b,
+    SDLK_c, SDLK_d, SDLK_e, SDLK_f
+};
+
+static const char CHIP8_DEFAULT_CHAT_SET[] = {
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+/* clang-format on */
 
 #endif
