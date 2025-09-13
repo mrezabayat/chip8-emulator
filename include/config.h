@@ -1,0 +1,22 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#include "SDL2/SDL.h"
+
+#define CHIP8_HEIGHT 32
+#define CHIP8_MEMORY_SIZE 4096
+#define CHIP8_STACK_DEPTH 16
+#define CHIP8_TOTAL_KEYS 16
+#define CHIP8_TOTAL_REGISTERS 16
+#define CHIP8_WIDTH 64
+#define CHIP8_WINDOW_SCALER 10
+#define EMULATOR_WINDOW_TITLE "Chip8 Emulator"
+
+static const SDL_Keycode CHIP8_KEY_MAP[CHIP8_TOTAL_KEYS] = {
+    SDLK_0, SDLK_1, SDLK_2, SDLK_3,
+    SDLK_4, SDLK_5, SDLK_6, SDLK_7,
+    SDLK_8, SDLK_9, SDLK_a, SDLK_b,
+    SDLK_c, SDLK_d, SDLK_e, SDLK_f
+};
+
+#endif

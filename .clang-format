@@ -1,0 +1,39 @@
+# .clang-format
+BasedOnStyle: LLVM
+Language: C
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Braces
+BreakBeforeBraces: Attach     # `{` on the same line (K&R style)
+
+# Line width
+ColumnLimit: 100
+
+# Pointers
+PointerAlignment: Left         # int *ptr instead of int* ptr
+
+# Function declarations
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Function calls
+BinPackArguments: false
+AllowAllArgumentsOnNextLine: true
+# (there’s no AlignAfterOpenBracket in clang-format — alignment is automatic)
+
+# Includes
+SortIncludes: true
+
+# Comments
+ReflowComments: true
+
+# Misc alignments
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+AlignTrailingComments: true
+IndentCaseLabels: true
