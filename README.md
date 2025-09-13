@@ -48,7 +48,7 @@ Currently it opens a window and listens for key input. The Escape key quits the 
 
 ## Project Structure
 
-```
+```bash
 include/      Header files  
 src/          Source code  
 build/        Compiled object files  

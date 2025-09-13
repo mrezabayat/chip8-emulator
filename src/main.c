@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 int main(int argc, char** argv) {
-    (void) argc;
-    (void) argv;
+    (void)argc;
+    (void)argv;
 
     chip8 chip;
     chip8_init(&chip);

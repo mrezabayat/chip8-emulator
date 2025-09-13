@@ -13,13 +13,9 @@ int chip8_keyboard_map(SDL_Keycode key) {
     return -1;
 }
 
-void chip8_keyboard_down(chip8* chip, int key) {
-    chip->keyboard.keyboard[key] = true;
-}
+void chip8_keyboard_down(chip8* chip, int key) { chip->keyboard.keyboard[key] = true; }
 
-void chip8_keyboard_up(chip8* chip, int key) {
-    chip->keyboard.keyboard[key] = false;
-}
+void chip8_keyboard_up(chip8* chip, int key) { chip->keyboard.keyboard[key] = false; }
 
 bool chip8_keyboard_is_down(const chip8* chip, int key) {
     chip8_check_key_bounds(key);
