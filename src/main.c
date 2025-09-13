@@ -8,11 +8,7 @@ int main(int argc, char** argv) {
 
     chip8 chip;
     chip8_init(&chip);
-    chip.registers.SP = 0;
-    chip8_stack_push(&chip, 0xff);
-    chip8_stack_push(&chip, 0xaa);
-    printf("%x\n", chip8_stack_pop(&chip));
-    printf("%x\n", chip8_stack_pop(&chip));
+    chip8_screen_pixel_set(&chip, 10, 10);
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
@@ -50,7 +46,6 @@ int main(int argc, char** argv) {
             if (e.type == SDL_QUIT)
                 running = 0;
             if (e.type == SDL_KEYDOWN) {
-                printf("Key down: %s\n", SDL_GetKeyName(e.key.keysym.sym));
                 int key = chip8_keyboard_map(e.key.keysym.sym);
                 if (key != -1) {
                     chip8_keyboard_down(&chip, key);
@@ -69,11 +64,19 @@ int main(int argc, char** argv) {
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_Rect rect = {.x = 320, .y = 160, .w = 80, .h = 40};
-        SDL_RenderDrawRect(renderer, &rect);
-        // SDL_RenderFillRect(renderer, &rect); // <- use this if you want a filled rectangle
+
+        for (int x = 0; x < CHIP8_WIDTH; ++x) {
+            for (int y = 0; y < CHIP8_HEIGHT; ++y) {
+                if (chip8_screen_is_pixel_set(&chip, x, y)) {
+                    SDL_Rect rect = {.x = x * CHIP8_WINDOW_SCALER,
+                                     .y = y * CHIP8_WINDOW_SCALER,
+                                     .w = CHIP8_WINDOW_SCALER,
+                                     .h = CHIP8_WINDOW_SCALER};
+                    SDL_RenderFillRect(renderer, &rect);
+                }
+            }
+        }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16); // ~60 fps

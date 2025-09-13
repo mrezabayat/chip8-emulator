@@ -4,6 +4,7 @@
 #include "chip8keyboard.h"
 #include "chip8memory.h"
 #include "chip8registers.h"
+#include "chip8screen.h"
 #include "chip8stack.h"
 #include "config.h"
 
@@ -12,6 +13,7 @@ typedef struct chip8 {
     chip8_registers registers;
     chip8_stack     stack;
     chip8_keyboard  keyboard;
+    chip8_screen    screen;
 } chip8;
 
 void chip8_init(chip8* chip);

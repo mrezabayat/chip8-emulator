@@ -7,7 +7,7 @@
 struct chip8;
 
 typedef struct chip8_keyboard {
-    bool keyboard[CHIP8_TOTAL_KEYS];
+    bool keys[CHIP8_TOTAL_KEYS];
 
 } chip8_keyboard;
 

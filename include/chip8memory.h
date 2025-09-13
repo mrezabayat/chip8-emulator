@@ -4,11 +4,13 @@
 #include "config.h"
 #include <stdint.h>
 
+struct chip8;
+
 typedef struct {
-    int8_t memory[CHIP8_MEMORY_SIZE];
+    int8_t data[CHIP8_MEMORY_SIZE];
 } chip8_memory;
 
-void   chip8_memory_set(chip8_memory* memory, int index, int8_t value);
-int8_t chip8_memory_get(const chip8_memory* memory, int index);
+void   chip8_memory_set(struct chip8* chip, int index, int8_t value);
+int8_t chip8_memory_get(const struct chip8* chip, int index);
 
 #endif

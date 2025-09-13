@@ -1,7 +1,7 @@
 INCLUDES= -I./include -I/opt/homebrew/Cellar/sdl2/2.32.10/include
 FLAGS= -g -Wall -Wextra
 LIBS= -L/opt/homebrew/Cellar/sdl2/2.32.10/lib/ -lSDL2
-OBJECTS= ./build/chip8memory.o ./build/chip8stack.o ./build/chip8keyboard.o ./build/chip8.o
+OBJECTS= ./build/chip8memory.o ./build/chip8stack.o ./build/chip8keyboard.o ./build/chip8.o ./build/chip8screen.o
 
 all: ${OBJECTS}
 	gcc ${FLAGS} ${LIBS} ${INCLUDES} ${OBJECTS} ./src/main.c -o ./bin/main
@@ -17,6 +17,9 @@ all: ${OBJECTS}
 
 ./build/chip8.o:./src/chip8.c
 	gcc ${FLAGS} ${INCLUDES} ./src/chip8.c -c -o ./build/chip8.o
+
+./build/chip8screen.o:./src/chip8screen.c
+	gcc ${FLAGS} ${INCLUDES} ./src/chip8screen.c -c -o ./build/chip8screen.o
 
 clean:
 	rm -f ./build/*.o ./bin/main
