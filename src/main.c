@@ -7,6 +7,7 @@ int main(int argc, char** argv) {
     (void) argv;
 
     chip8 chip;
+    chip8_init(&chip);
     chip.registers.SP = 0;
     chip8_stack_push(&chip, 0xff);
     chip8_stack_push(&chip, 0xaa);
