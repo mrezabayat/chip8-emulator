@@ -8,7 +8,24 @@ int main(int argc, char** argv) {
 
     chip8 chip;
     chip8_init(&chip);
-    chip8_screen_pixel_set(&chip, 10, 10);
+    chip.registers.delay_timer = 60;
+    chip8_screen_draw_sprite(&chip, 0, 0, &chip.memory.data[0], 5);
+    chip8_screen_draw_sprite(&chip, 5, 0, &chip.memory.data[5], 5);
+    chip8_screen_draw_sprite(&chip, 10, 0, &chip.memory.data[10], 5);
+    chip8_screen_draw_sprite(&chip, 15, 0, &chip.memory.data[15], 5);
+    chip8_screen_draw_sprite(&chip, 20, 0, &chip.memory.data[20], 5);
+    chip8_screen_draw_sprite(&chip, 25, 0, &chip.memory.data[25], 5);
+    chip8_screen_draw_sprite(&chip, 30, 0, &chip.memory.data[30], 5);
+    chip8_screen_draw_sprite(&chip, 35, 0, &chip.memory.data[35], 5);
+    chip8_screen_draw_sprite(&chip, 40, 0, &chip.memory.data[40], 5);
+    chip8_screen_draw_sprite(&chip, 45, 0, &chip.memory.data[45], 5);
+
+    chip8_screen_draw_sprite(&chip, 0, 6, &chip.memory.data[50], 5);
+    chip8_screen_draw_sprite(&chip, 5, 6, &chip.memory.data[55], 5);
+    chip8_screen_draw_sprite(&chip, 10, 6, &chip.memory.data[60], 5);
+    chip8_screen_draw_sprite(&chip, 15, 6, &chip.memory.data[65], 5);
+    chip8_screen_draw_sprite(&chip, 20, 6, &chip.memory.data[70], 5);
+    chip8_screen_draw_sprite(&chip, 25, 6, &chip.memory.data[75], 5);
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
@@ -79,6 +96,10 @@ int main(int argc, char** argv) {
         }
 
         SDL_RenderPresent(renderer);
+        while (chip.registers.delay_timer > 0) {
+            --chip.registers.delay_timer;
+            SDL_Delay(CHIP8_DELAY_TIME_MS);
+        }
         SDL_Delay(16); // ~60 fps
     }
 
