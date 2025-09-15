@@ -4,13 +4,37 @@
 #include <stdio.h>
 
 int main(int argc, char** argv) {
-    (void)argc;
-    (void)argv;
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <chip8-ROM>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char* filename = argv[1];
+    printf("Loading ROM: %s\n", filename);
+
+    FILE* rom = fopen(filename, "rb");
+    if (!rom) {
+        fprintf(stderr, "Failed to open file %s\n", filename);
+        return EXIT_FAILURE;
+    }
+
+    fseek(rom, 0, SEEK_END);
+    long size = ftell(rom);
+    printf("Size of ROM is: %ld\n", size);
+    fseek(rom, 0, SEEK_SET);
+
+    char buff[size];
+    int  res = fread(buff, size, 1, rom);
+    if (res != 1) {
+        fprintf(stderr, "Failed to read from file, error code: %d\n", res);
+        fclose(rom);
+        return EXIT_FAILURE;
+    }
 
     chip8 chip;
     chip8_init(&chip);
-    chip.registers.delay_timer = 60;
-    chip.registers.sound_timer = 60;
+    chip8_load(&chip, buff, size);
+
     chip8_screen_draw_sprite(&chip, 0, 0, &chip.memory.data[0], 5);
     chip8_screen_draw_sprite(&chip, 5, 0, &chip.memory.data[5], 5);
     chip8_screen_draw_sprite(&chip, 10, 0, &chip.memory.data[10], 5);
@@ -109,7 +133,9 @@ int main(int argc, char** argv) {
         }
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(16); // ~60 fps
+        // SDL_Delay(16); // ~60 fps
+        int16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
+        chip8_exec(&chip, opcode);
     }
 
     SDL_DestroyRenderer(renderer);

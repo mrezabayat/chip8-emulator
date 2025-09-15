@@ -10,7 +10,8 @@ typedef struct {
     int8_t data[CHIP8_MEMORY_SIZE];
 } chip8_memory;
 
-void   chip8_memory_set(struct chip8* chip, int index, int8_t value);
-int8_t chip8_memory_get(const struct chip8* chip, int index);
+void    chip8_memory_set(struct chip8* chip, int index, int8_t value);
+int8_t  chip8_memory_get(const struct chip8* chip, int index);
+int16_t chip8_memory_get_two_bytes(const struct chip8* chip, int index);
 
 #endif

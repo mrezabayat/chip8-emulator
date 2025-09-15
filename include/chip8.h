@@ -17,5 +17,7 @@ typedef struct chip8 {
 } chip8;
 
 void chip8_init(chip8* chip);
+void chip8_load(chip8* chip, const char* buff, size_t size);
+void chip8_exec(chip8* chip, int16_t opcode);
 
 #endif

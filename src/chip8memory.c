@@ -13,3 +13,9 @@ int8_t chip8_memory_get(const chip8* chip, int index) {
     chip8_check_memory_index_bounds(index);
     return chip->memory.data[index];
 }
+
+int16_t chip8_memory_get_two_bytes(const chip8* chip, int index) {
+    int8_t byte0 = chip8_memory_get(chip, index);
+    int8_t byte1 = chip8_memory_get(chip, index + 1);
+    return byte0 << 8 | byte1;
+}
