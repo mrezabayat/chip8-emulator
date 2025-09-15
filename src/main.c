@@ -1,4 +1,5 @@
 #include "SDL2/SDL.h"
+#include "beep.h"
 #include "chip8.h"
 #include <stdio.h>
 
@@ -9,6 +10,7 @@ int main(int argc, char** argv) {
     chip8 chip;
     chip8_init(&chip);
     chip.registers.delay_timer = 60;
+    chip.registers.sound_timer = 60;
     chip8_screen_draw_sprite(&chip, 0, 0, &chip.memory.data[0], 5);
     chip8_screen_draw_sprite(&chip, 5, 0, &chip.memory.data[5], 5);
     chip8_screen_draw_sprite(&chip, 10, 0, &chip.memory.data[10], 5);
@@ -95,11 +97,18 @@ int main(int argc, char** argv) {
             }
         }
 
-        SDL_RenderPresent(renderer);
         while (chip.registers.delay_timer > 0) {
-            --chip.registers.delay_timer;
+            chip.registers.delay_timer -= 6;
             SDL_Delay(CHIP8_DELAY_TIME_MS);
+            printf("Value of delay_timer: %d\n", chip.registers.delay_timer);
         }
+
+        while (chip.registers.sound_timer > 0) {
+            chip.registers.sound_timer -= 6;
+            beep(CHIP8_BEEP_FREQUENCY, CHIP8_DELAY_TIME_MS);
+        }
+
+        SDL_RenderPresent(renderer);
         SDL_Delay(16); // ~60 fps
     }
 

@@ -10,7 +10,8 @@
 #define CHIP8_TOTAL_REGISTERS 16
 #define CHIP8_WIDTH 64
 #define CHIP8_WINDOW_SCALER 10
-#define CHIP8_DELAY_TIME_MS 1.666667
+#define CHIP8_DELAY_TIME_MS 100
+#define CHIP8_BEEP_FREQUENCY 500
 #define EMULATOR_WINDOW_TITLE "Chip8 Emulator"
 
 /* clang-format off */
