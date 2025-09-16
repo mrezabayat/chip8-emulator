@@ -134,8 +134,10 @@ int main(int argc, char** argv) {
 
         SDL_RenderPresent(renderer);
         // SDL_Delay(16); // ~60 fps
-        int16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
+        uint16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
+        printf("Opcode is 0x%04X\n", opcode);
         chip8_exec(&chip, opcode);
+        chip.registers.PC += 2;
     }
 
     SDL_DestroyRenderer(renderer);
