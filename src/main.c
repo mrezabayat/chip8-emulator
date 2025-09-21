@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
     SDL_RenderSetLogicalSize(
         renderer, CHIP8_WIDTH * CHIP8_WINDOW_SCALER, CHIP8_HEIGHT * CHIP8_WINDOW_SCALER);
 
+    beep_init();
+
     // --- Timing setup ---
     const Uint32 TIMER_INTERVAL_MS = 1000 / 60; // CHIP-8 timers tick at 60 Hz
     Uint64       last_timer_tick   = SDL_GetTicks64();
@@ -98,11 +100,20 @@ int main(int argc, char** argv) {
             if (chip.registers.delay_timer > 0) {
                 --chip.registers.delay_timer;
             }
-            if (chip.registers.sound_timer > 0) {
-                // simple continuous tone while the timer is nonzero
-                beep(CHIP8_BEEP_FREQUENCY, (int)TIMER_INTERVAL_MS);
-                --chip.registers.sound_timer;
+
+            if (chip.registers.sound_timer > 0 && !beep_is_playing()) {
+                beep_start(CHIP8_BEEP_FREQUENCY);
             }
+
+            if (chip.registers.sound_timer > 0) {
+                --chip.registers.sound_timer;
+                if (chip.registers.sound_timer == 0 && beep_is_playing()) {
+                    beep_stop();
+                }
+            } else if (beep_is_playing()) {
+                beep_stop();
+            }
+
             last_timer_tick += TIMER_INTERVAL_MS;
         }
 
@@ -133,6 +144,9 @@ int main(int argc, char** argv) {
         SDL_RenderPresent(renderer);
         // With vsync, this presents at the display refresh rate (typically ~60 Hz)
     }
+
+    beep_stop();
+    beep_shutdown();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

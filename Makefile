@@ -18,7 +18,7 @@ ifeq ($(UNAME_S),Darwin)
   LIBS  += -framework AudioToolbox -framework AudioUnit -framework CoreAudio
 endif
 
-OBJECTS= ./build/chip8memory.o ./build/chip8stack.o ./build/chip8keyboard.o ./build/chip8.o ./build/chip8screen.o
+OBJECTS= ./build/chip8memory.o ./build/chip8stack.o ./build/chip8keyboard.o ./build/chip8.o ./build/chip8screen.o ./build/beep.o
 
 all: ${OBJECTS}
 	$(CC) ${FLAGS} ${LIBS} ${INCLUDES} ${OBJECTS} ./src/main.c -o ./bin/main
@@ -37,6 +37,9 @@ all: ${OBJECTS}
 
 ./build/chip8screen.o:./src/chip8screen.c
 	$(CC) ${FLAGS} ${INCLUDES} ./src/chip8screen.c -c -o ./build/chip8screen.o
+
+./build/beep.o:./src/beep.c
+	$(CC) ${FLAGS} ${INCLUDES} ./src/beep.c -c -o ./build/beep.o
 
 clean:
 	rm -f ./build/*.o ./bin/main
