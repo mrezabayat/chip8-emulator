@@ -2,18 +2,27 @@
 #include "config.h"
 #include <assert.h>
 #include <memory.h>
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "SDL2/SDL.h"
 
 void chip8_init(chip8* chip) {
     memset(chip, 0, sizeof(chip8));
+    static bool seeded = false;
+    if (!seeded) {
+        srand((unsigned)time(NULL));
+        seeded = true;
+    }
     memcpy(chip->memory.data, CHIP8_DEFAULT_CHAT_SET, sizeof(CHIP8_DEFAULT_CHAT_SET));
+    chip->registers.SP = 0;
+    chip->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
 void chip8_load(chip8* chip, const char* buff, size_t size) {
-    assert(size + CHIP8_PROGRAM_LOAD_ADDRESS < CHIP8_MEMORY_SIZE);
+    assert(size + CHIP8_PROGRAM_LOAD_ADDRESS <= CHIP8_MEMORY_SIZE);
     memcpy(&chip->memory.data[CHIP8_PROGRAM_LOAD_ADDRESS], buff, size);
     chip->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
@@ -48,30 +57,32 @@ static void chip8_exec_extended_8(chip8* chip, uint8_t x, uint8_t y, uint8_t n) 
             break;
 
         /* SUB Vx, Vy: Set Vx = Vx - Vy, set VF = NOT borrow */
-        case 0x05:
-            chip->registers.registers[0x0f] =
-                chip->registers.registers[x] > chip->registers.registers[y];
-            chip->registers.registers[x] -= chip->registers.registers[y];
-            break;
+        case 0x05: {
+            uint8_t vx = chip->registers.registers[x];
+            uint8_t vy = chip->registers.registers[y];
+            chip->registers.registers[0x0f] = vx >= vy;
+            chip->registers.registers[x]    = vx - vy;
+        } break;
 
         /* SHR Vx {, Vy} */
         case 0x06:
             chip->registers.registers[0x0f] = chip->registers.registers[x] & 0b00000001;
-            chip->registers.registers[x] /= 2;
+            chip->registers.registers[x] >>= 1;
             break;
 
         /* 8xy7 - SUBN Vx, Vy */
-        case 0x07:
-            chip->registers.registers[0x0f] =
-                chip->registers.registers[x] < chip->registers.registers[y];
-            chip->registers.registers[x] =
-                chip->registers.registers[y] - chip->registers.registers[x];
-            break;
+        case 0x07: {
+            uint8_t vx = chip->registers.registers[x];
+            uint8_t vy = chip->registers.registers[y];
+            chip->registers.registers[0x0f] = vy >= vx;
+            chip->registers.registers[x]    = vy - vx;
+        } break;
 
         /* SHL Vx {, Vy} */
         case 0x0E:
-            chip->registers.registers[0x0f] = chip->registers.registers[x] & 0b10000000;
-            chip->registers.registers[x] *= 2;
+            chip->registers.registers[0x0f] =
+                (chip->registers.registers[x] & 0b10000000) != 0;
+            chip->registers.registers[x] <<= 1;
             break;
     }
 }
@@ -118,9 +129,11 @@ static void chip8_exec_extended_F(chip8* chip, uint8_t x, uint8_t kk) {
             break;
 
         /* Add I, Vx */
-        case 0x1E:
-            chip->registers.I += chip->registers.registers[x];
-            break;
+        case 0x1E: {
+            uint32_t result = chip->registers.I + chip->registers.registers[x];
+            chip->registers.registers[0x0f] = result > 0x0FFF;
+            chip->registers.I               = (uint16_t)result;
+        } break;
 
         /* LD, F, Vx */
         case 0x29:
@@ -225,8 +238,7 @@ static void chip8_exec_extended(chip8* chip, uint16_t opcode) {
 
         /* RND Vx, byte: Set Vx = random byte AND kk */
         case 0xC000:
-            srand(time(NULL));
-            chip->registers.registers[x] = (rand() % 256) & kk;
+            chip->registers.registers[x] = (uint8_t)(rand() & 0xFF) & kk;
             break;
 
         /* DRW Vx, Vy, nibble:

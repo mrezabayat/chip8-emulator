@@ -14,9 +14,9 @@ bool chip8_screen_is_pixel_set(const chip8* chip, int x, int y) {
 }
 
 void chip8_screen_draw_sprite(chip8* chip, int x, int y, const uint8_t* sprite, int num) {
-
+    chip->registers.registers[0x0f] = 0;
     for (int ly = 0; ly < num; ++ly) {
-        char line = sprite[ly];
+        uint8_t line = sprite[ly];
         for (int lx = 0; lx < 8; ++lx) {
             if ((line & (0b10000000 >> lx)) == 0)
                 continue;

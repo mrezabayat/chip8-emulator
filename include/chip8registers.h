@@ -5,12 +5,12 @@
 #include <stdint.h>
 
 typedef struct {
-    int8_t  registers[CHIP8_TOTAL_REGISTERS];
-    int16_t I;
-    int8_t  delay_timer;
-    int8_t  sound_timer;
-    int16_t PC;
-    int8_t  SP;
+    uint8_t  registers[CHIP8_TOTAL_REGISTERS];
+    uint16_t I;
+    uint8_t  delay_timer;
+    uint8_t  sound_timer;
+    uint16_t PC;
+    uint8_t  SP;
 } chip8_registers;
 
 #endif

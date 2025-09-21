@@ -4,7 +4,7 @@
 
 void chip8_check_memory_index_bounds(int index) { assert(index >= 0 && index < CHIP8_MEMORY_SIZE); }
 
-void chip8_memory_set(chip8* chip, int index, int8_t value) {
+void chip8_memory_set(chip8* chip, int index, uint8_t value) {
     chip8_check_memory_index_bounds(index);
     chip->memory.data[index] = value;
 }

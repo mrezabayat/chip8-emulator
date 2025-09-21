@@ -64,6 +64,9 @@ int main(int argc, char** argv) {
     // keep logical coordinates consistent across DPI scales
     SDL_RenderSetLogicalSize(renderer, 640, 320);
 
+    const Uint32 timer_interval_ms = 1000 / 60;
+    Uint64       last_timer_tick   = SDL_GetTicks64();
+
     int running = 1;
     while (running) {
         SDL_Event e;
@@ -87,6 +90,18 @@ int main(int argc, char** argv) {
             }
         }
 
+        Uint64 now = SDL_GetTicks64();
+        while (now - last_timer_tick >= timer_interval_ms) {
+            if (chip.registers.delay_timer > 0) {
+                --chip.registers.delay_timer;
+            }
+            if (chip.registers.sound_timer > 0) {
+                beep(CHIP8_BEEP_FREQUENCY, (int)timer_interval_ms);
+                --chip.registers.sound_timer;
+            }
+            last_timer_tick += timer_interval_ms;
+        }
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -101,17 +116,6 @@ int main(int argc, char** argv) {
                     SDL_RenderFillRect(renderer, &rect);
                 }
             }
-        }
-
-        while (chip.registers.delay_timer > 0) {
-            chip.registers.delay_timer -= 6;
-            SDL_Delay(CHIP8_DELAY_TIME_MS);
-            printf("Value of delay_timer: %d\n", chip.registers.delay_timer);
-        }
-
-        while (chip.registers.sound_timer > 0) {
-            chip.registers.sound_timer -= 6;
-            beep(CHIP8_BEEP_FREQUENCY, CHIP8_DELAY_TIME_MS);
         }
 
         SDL_RenderPresent(renderer);

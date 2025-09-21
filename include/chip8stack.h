@@ -7,10 +7,10 @@
 struct chip8;
 
 typedef struct {
-    int16_t stack[CHIP8_STACK_DEPTH];
+    uint16_t stack[CHIP8_STACK_DEPTH];
 } chip8_stack;
 
-void    chip8_stack_push(struct chip8* chip, int16_t value);
-int16_t chip8_stack_pop(struct chip8* chip);
+void     chip8_stack_push(struct chip8* chip, uint16_t value);
+uint16_t chip8_stack_pop(struct chip8* chip);
 
 #endif
