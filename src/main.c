@@ -25,19 +25,19 @@ int main(int argc, char** argv) {
 
     char buff[size];
     int  res = fread(buff, size, 1, rom);
+    fclose(rom);
     if (res != 1) {
         fprintf(stderr, "Failed to read from file, error code: %d\n", res);
-        fclose(rom);
         return EXIT_FAILURE;
     }
 
     chip8 chip;
     chip8_init(&chip);
-    chip8_load(&chip, buff, size);
+    chip8_load(&chip, buff, (size_t)size);
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
-        return 1;
+        return EXIT_FAILURE;
     }
 
     SDL_Window* window = SDL_CreateWindow(EMULATOR_WINDOW_TITLE,
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     if (!window) {
         fprintf(stderr, "SDL_CreateWindow error: %s\n", SDL_GetError());
         SDL_Quit();
-        return 1;
+        return EXIT_FAILURE;
     }
 
     SDL_Renderer* renderer =
@@ -58,50 +58,62 @@ int main(int argc, char** argv) {
         fprintf(stderr, "SDL_CreateRenderer error: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
         SDL_Quit();
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    // keep logical coordinates consistent across DPI scales
-    SDL_RenderSetLogicalSize(renderer, 640, 320);
+    // Keep logical coordinates consistent across DPI scales
+    SDL_RenderSetLogicalSize(
+        renderer, CHIP8_WIDTH * CHIP8_WINDOW_SCALER, CHIP8_HEIGHT * CHIP8_WINDOW_SCALER);
 
-    const Uint32 timer_interval_ms = 1000 / 60;
+    // --- Timing setup ---
+    const Uint32 TIMER_INTERVAL_MS = 1000 / 60; // CHIP-8 timers tick at 60 Hz
     Uint64       last_timer_tick   = SDL_GetTicks64();
+
+    // How many opcodes to execute per video frame (~60 fps due to vsync)
+    const int CYCLES_PER_FRAME = 8; // increase to go faster, decrease to go slower
 
     int running = 1;
     while (running) {
+        // --- Events ---
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT)
+            if (e.type == SDL_QUIT) {
                 running = 0;
-            if (e.type == SDL_KEYDOWN) {
+            } else if (e.type == SDL_KEYDOWN) {
                 int key = chip8_keyboard_map(e.key.keysym.sym);
-                if (key != -1) {
+                if (key != -1)
                     chip8_keyboard_down(&chip, key);
-                }
-
                 if (e.key.keysym.sym == SDLK_ESCAPE)
                     running = 0;
-            }
-            if (e.type == SDL_KEYUP) {
+            } else if (e.type == SDL_KEYUP) {
                 int key = chip8_keyboard_map(e.key.keysym.sym);
-                if (key != -1) {
+                if (key != -1)
                     chip8_keyboard_up(&chip, key);
-                }
             }
         }
 
+        // --- 60 Hz timers ---
         Uint64 now = SDL_GetTicks64();
-        while (now - last_timer_tick >= timer_interval_ms) {
+        while (now - last_timer_tick >= TIMER_INTERVAL_MS) {
             if (chip.registers.delay_timer > 0) {
                 --chip.registers.delay_timer;
             }
             if (chip.registers.sound_timer > 0) {
-                beep(CHIP8_BEEP_FREQUENCY, (int)timer_interval_ms);
+                // simple continuous tone while the timer is nonzero
+                beep(CHIP8_BEEP_FREQUENCY, (int)TIMER_INTERVAL_MS);
                 --chip.registers.sound_timer;
             }
-            last_timer_tick += timer_interval_ms;
+            last_timer_tick += TIMER_INTERVAL_MS;
         }
 
+        // --- CPU: run multiple instructions per frame ---
+        for (int i = 0; i < CYCLES_PER_FRAME; ++i) {
+            uint16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
+            chip.registers.PC += 2;
+            chip8_exec(&chip, opcode);
+        }
+
+        // --- Draw ---
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -119,10 +131,7 @@ int main(int argc, char** argv) {
         }
 
         SDL_RenderPresent(renderer);
-        // SDL_Delay(16); // ~60 fps
-        uint16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
-        chip.registers.PC += 2;
-        chip8_exec(&chip, opcode);
+        // With vsync, this presents at the display refresh rate (typically ~60 Hz)
     }
 
     SDL_DestroyRenderer(renderer);
