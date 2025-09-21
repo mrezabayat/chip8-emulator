@@ -21,7 +21,7 @@ void chip8_screen_draw_sprite(chip8* chip, int x, int y, const uint8_t* sprite, 
             if ((line & (0b10000000 >> lx)) == 0)
                 continue;
             if (chip8_screen_is_pixel_set(chip, lx + x, ly + y)) {
-                chip->registers.registers[0xf] = 1;
+                chip->registers.registers[0x0f] = 1;
             }
             chip8_screen_pixel_set(chip, lx + x, ly + y);
         }

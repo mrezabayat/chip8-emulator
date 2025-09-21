@@ -35,24 +35,6 @@ int main(int argc, char** argv) {
     chip8_init(&chip);
     chip8_load(&chip, buff, size);
 
-    chip8_screen_draw_sprite(&chip, 0, 0, &chip.memory.data[0], 5);
-    chip8_screen_draw_sprite(&chip, 5, 0, &chip.memory.data[5], 5);
-    chip8_screen_draw_sprite(&chip, 10, 0, &chip.memory.data[10], 5);
-    chip8_screen_draw_sprite(&chip, 15, 0, &chip.memory.data[15], 5);
-    chip8_screen_draw_sprite(&chip, 20, 0, &chip.memory.data[20], 5);
-    chip8_screen_draw_sprite(&chip, 25, 0, &chip.memory.data[25], 5);
-    chip8_screen_draw_sprite(&chip, 30, 0, &chip.memory.data[30], 5);
-    chip8_screen_draw_sprite(&chip, 35, 0, &chip.memory.data[35], 5);
-    chip8_screen_draw_sprite(&chip, 40, 0, &chip.memory.data[40], 5);
-    chip8_screen_draw_sprite(&chip, 45, 0, &chip.memory.data[45], 5);
-
-    chip8_screen_draw_sprite(&chip, 0, 6, &chip.memory.data[50], 5);
-    chip8_screen_draw_sprite(&chip, 5, 6, &chip.memory.data[55], 5);
-    chip8_screen_draw_sprite(&chip, 10, 6, &chip.memory.data[60], 5);
-    chip8_screen_draw_sprite(&chip, 15, 6, &chip.memory.data[65], 5);
-    chip8_screen_draw_sprite(&chip, 20, 6, &chip.memory.data[70], 5);
-    chip8_screen_draw_sprite(&chip, 25, 6, &chip.memory.data[75], 5);
-
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
         return 1;
@@ -135,9 +117,8 @@ int main(int argc, char** argv) {
         SDL_RenderPresent(renderer);
         // SDL_Delay(16); // ~60 fps
         uint16_t opcode = chip8_memory_get_two_bytes(&chip, chip.registers.PC);
-        printf("Opcode is 0x%04X\n", opcode);
-        chip8_exec(&chip, opcode);
         chip.registers.PC += 2;
+        chip8_exec(&chip, opcode);
     }
 
     SDL_DestroyRenderer(renderer);
