@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
     chip8_init(&chip);
     chip8_load(&chip, buff, (size_t)size);
 
+    SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
         return EXIT_FAILURE;

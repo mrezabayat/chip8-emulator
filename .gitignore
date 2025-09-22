@@ -2,3 +2,12 @@
 .vscode
 build
 bin
+dist
+.venv
+
+# Conan artifacts
+conan.lock
+conan/
+conanbuild/
+build/conan*
+CMakeUserPresets.json
